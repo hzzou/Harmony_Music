@@ -6,51 +6,51 @@
     },
     {
       "name": "collection_num",
-      "value": "125000"
+      "value": "12.5万"
     },
     {
       "name": "list_name",
-      "value": "Independent folk"
+      "value": "独立民谣"
     },
     {
       "name": "playlist_Introduction",
-      "value": "The set list is a selection of popular folk songs."
+      "value": "歌单选取了一些比较受关注的民谣歌曲。"
     },
     {
       "name": "play_all",
-      "value": "Play all(%d)"
+      "value": "播放全部(%d)"
     },
     {
       "name": "collect",
-      "value": "collect"
+      "value": "收藏"
     },
     {
       "name": "download",
-      "value": "download"
+      "value": "下载"
     },
     {
       "name": "comment",
-      "value": "comment"
+      "value": "评论"
     },
     {
       "name": "share",
-      "value": "share"
+      "value": "分享"
     },
     {
       "name": "play_list",
-      "value": "play list"
+      "value": "歌单"
     },
     {
       "name": "song_name",
-      "value": "I don't know"
+      "value": "不知道"
     },
     {
       "name": "singer",
-      "value": "Hello xiao wan"
+      "value": "小碗你好"
     },
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "模块描述"
     },
     {
       "name": "EntryAbility_desc",
