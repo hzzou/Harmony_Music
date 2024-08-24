@@ -30,7 +30,7 @@ struct Index {
   build() {
     Stack({alignContent: Alignment.Top}){
       Header({currentBreakpoint: this.currentBreakpoint})
-      Content()
+      Content({currentBreakpoint: this.currentBreakpoint})
       Player()
     }
     .width(StyleConstant.FULL_WIDTH)

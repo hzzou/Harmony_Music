@@ -1,84 +1,153 @@
 import { preferences } from '@kit.ArkData';
+import { Logger } from './Logger';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-class PreferenceUtil{
-  prefMap: Map<string, preferences.Preferences> = new Map();
+const TAG = 'PreferenceUtil';
+const MY_STORE = 'myStore';
+const FORM_ID = 'formIds';
 
-  async createPreference(context: Context, name: string){
-    try{
-      let prefer = await preferences.getPreferences(context, name); // get方式它不存在就会创建
-      this.prefMap.set(name, prefer);
-      console.log(`加载preference ${name}成功`);
-    } catch (e) {
-      console.log(`加载preference ${name}失败`, JSON.stringify(e));
+export class PreferenceUtil {
+  private static preferenceUtil: PreferenceUtil;
+
+  public static getInstance(): PreferenceUtil {
+    if (!PreferenceUtil.preferenceUtil) {
+      PreferenceUtil.preferenceUtil = new PreferenceUtil();
     }
+    return PreferenceUtil.preferenceUtil;
   }
 
-  async setPreference(name: string, key:  string, value: preferences.ValueType){
-    if(!this.prefMap.has(name)){
-      console.log(`preference ${name}尚未初始化`);
-      return;
-    }
-
-    try{
-      let prefer = this.prefMap.get(name);
-      await prefer?.put(key, value);
-      await prefer?.flush();
-      console.log(`保存preference ${name}的${key}=${value} 成功`)
-    } catch (e) {
-      console.log(`保存preference ${name}的${key}=${value} 失败`, JSON.stringify(e))
-    }
+  getPreferences(context: Context): Promise<preferences.Preferences> {
+    return new Promise((resolve, reject) => {
+      preferences.getPreferences(context, MY_STORE, (err, pref: preferences.Preferences) => {
+        if (err) {
+          Logger.error(TAG, `Failed to get preferences. Code:${err.code},message:${err.message}`);
+          reject(err);
+          return;
+        }
+        resolve(pref);
+      })
+    })
   }
 
-  async getPreference(name: string, key: string, defaultValue: preferences.ValueType): Promise<preferences.ValueType>{
-    let result: preferences.ValueType = defaultValue;
-    if(!this.prefMap.has(name)){
-      console.log(`preference ${name}尚未初始化`);
-      return result;
-    }
-
-    try{
-      let prefer = this.prefMap.get(name);
-      if(prefer){
-        result = await prefer.get(key, defaultValue);
-        console.log(`读取preference ${name}的${key} = ${result} 成功`);
-        // 若放到此处，函数末尾会有个undefined返回
+  preferencesFlush(preferences: preferences.Preferences) {
+    preferences.flush((err) => {
+      if (err) {
+        Logger.error(TAG, `Failed to flush. Code:${err.code}, message:${err.message}`);
       }
-    } catch (e) {
-      console.log(`读取preference ${name}的${key}失败`, JSON.stringify(e));
-    }
-    // 若不放到这里return的话，函数末尾会有个undefined
-    return result;
+    })
   }
 
-  // 只从缓存中删除，不会删除持久化
-  async removePreferenceFromCache(context: Context, name: string){
-    if(!this.prefMap.has(name)){
-      console.log(`preference ${name}尚未初始化`);
-      return;
-    }
+  preferencesPut(preferences: preferences.Preferences, formIds: Array<string>): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      try {
+        preferences.put(FORM_ID, formIds, (err) => {
+          if (err) {
+            reject(err);
+            Logger.error(TAG, `Failed to put data. Code:${err.code}, message:${err.message}`);
+            return;
+          }
+          Logger.info(TAG, `preferencesPut succeed,formIds: ${JSON.stringify(formIds)}`);
+          resolve(true);
+        })
+      } catch (error) {
+        Logger.error(TAG, `Failed to put data. Code: ${(error as BusinessError).code},
+        message:${(error as BusinessError).message}`);
+      }
+    });
+  }
 
-    try{
-      await preferences.removePreferencesFromCache(context, name);
-      console.log(`从缓存移除preference ${name}成功`);
-    } catch (e) {
-      console.log(`从缓存移除preference ${name}失败`, JSON.stringify(e));
+  async preferencesHas(preferences: preferences.Preferences): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      preferences.has(FORM_ID, (err, value) => {
+        if (err) {
+          reject(err);
+          Logger.error(TAG, `WANG to check the key 'formIds'. Code:${err.code}, message:${err.message}`);
+          return;
+        }
+        resolve(value);
+      });
+    })
+  }
+
+  removePreferencesFromCache(context: Context): void {
+    preferences.removePreferencesFromCache(context, MY_STORE);
+  }
+
+  async getFormIds(context: Context): Promise<Array<string>> {
+    try {
+      let preferences = await this.getPreferences(context);
+      return new Promise((resolve, reject) => {
+        if (preferences === null) {
+          Logger.error(TAG, `preferences is null`);
+          return;
+        }
+        preferences.get(FORM_ID, [''], (err: BusinessError, value: preferences.ValueType) => {
+          if (err) {
+            reject(err);
+            Logger.error(TAG, `Failed to get value of 'formIds'. Code:${err.code}, message:${err.message}`);
+            return;
+          }
+          resolve(value as Array<string>);
+          Logger.info(TAG, `Succeeded in getting value of 'formIds'. val: ${value}.`);
+        })
+      })
+    } catch (error) {
+      Logger.error(TAG, `WANG Failed to get value of 'formIds'. Code:${(error as BusinessError).code},
+       message:${(error as BusinessError).message}`);
+    }
+    return new Promise((resolve, reject) => {})
+  }
+
+  async addFormId(context: Context, formId: string) {
+    try {
+      let preferences = await this.getPreferences(context);
+      if (preferences === null) {
+        Logger.error(TAG, `preferences is null`);
+        return;
+      }
+
+      if (await this.preferencesHas(preferences)) {
+        let formIds = await this.getFormIds(context);
+        if (formIds.indexOf(formId) === -1) {
+          formIds.push(formId);
+          if (!await this.preferencesPut(preferences, formIds)) {
+            return;
+          }
+          this.preferencesFlush(preferences);
+        }
+      } else {
+        if (!await this.preferencesPut(preferences, [formId])) {
+          return;
+        }
+        this.preferencesFlush(preferences);
+      }
+    } catch (error) {
+      Logger.error(TAG, `Failed to check the key 'formIds'. Code:${(error as BusinessError).code},
+       message:${(error as BusinessError).message}`);
     }
   }
 
-  // 删除preference, 不仅删除缓存中的，持久化的也删除
-  async deletePreference(context: Context, name: string){
-    if(!this.prefMap.has(name)){
-      console.log(`preference ${name}尚未初始化`);
-      return;
-    }
-
-    try{
-      await preferences.deletePreferences(context, name);
-      this.prefMap.delete(name);
-    } catch (e) {
-      console.log(`删除preference ${name}失败`, JSON.stringify(e));
+  async removeFormId(context: Context, formId: string) {
+    try {
+      let preferences = await this.getPreferences(context);
+      if (preferences === null) {
+        Logger.error(TAG, `preferences is null`);
+        return;
+      }
+      if (await this.preferencesHas(preferences)) {
+        let formIds = await this.getFormIds(context);
+        let index = formIds.indexOf(formId);
+        if (index !== -1) {
+          formIds.splice(index, 1);
+        }
+        if (!await this.preferencesPut(preferences, formIds)) {
+          return;
+        }
+        this.preferencesFlush(preferences);
+      }
+    } catch (error) {
+      Logger.error(TAG, `WANG Failed to get preferences. Code:${(error as BusinessError).code},
+      message:${(error as BusinessError).message}`);
     }
   }
 }
-
-export default new PreferenceUtil();

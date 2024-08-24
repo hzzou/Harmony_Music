@@ -49,4 +49,17 @@ export class BackgroundUtil{
         }
       })
   }
+
+  public static stopContinuousTask(context: common.UIAbilityContext): void {
+    try {
+      backgroundTaskManager.stopBackgroundRunning(context).then(() => {
+        Logger.info('this avPlayer: ', 'stopBackgroundRunning succeeded');
+      }).catch((error: BusinessError) => {
+        Logger.error('this avPlayer: ', `stopBackgroundRunning failed Cause: code ${error.code}`);
+      });
+    } catch (error) {
+      Logger.error('this avPlayer: ', `stopBackgroundRunning failed. code ${(error as BusinessError).code}
+       message ${(error as BusinessError).message}`);
+    }
+  }
 }

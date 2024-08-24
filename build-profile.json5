@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/hzlzh/.ohos/config/default_Music_-U-LnA0qIDHZqL-BNelGcrZI7D3zfhj1KuiAEV_Pe7g=.cer",
+          "storePassword": "0000001B8477E97B467A783AE1F7EF9A89172897D3D07DDD6C7E8F27FB626205F076C1042094D6B4B900CC",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B56AF6C6E48804358B49A7B6AADF355265620F933210F1AF07641E12EE464C07A7976B30464F3CB",
+          "profile": "/Users/hzlzh/.ohos/config/default_Music_-U-LnA0qIDHZqL-BNelGcrZI7D3zfhj1KuiAEV_Pe7g=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/hzlzh/.ohos/config/default_Music_-U-LnA0qIDHZqL-BNelGcrZI7D3zfhj1KuiAEV_Pe7g=.p12"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
