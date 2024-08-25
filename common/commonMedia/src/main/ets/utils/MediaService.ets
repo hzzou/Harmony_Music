@@ -12,6 +12,7 @@ import { PreferenceUtil } from './PreferenceUtil';
 import { SongConstant } from '@ohos/commonConstant';
 import { CardData } from '../viewmodel/CardData';
 import { formBindingData, formProvider } from '@kit.FormKit';
+import { JSON } from '@kit.ArkTS';
 
 const TAG = 'MediaService';
 
@@ -297,8 +298,10 @@ export class MediaService{
   // 设置播放状态
   private async setPlayState(playbackState: avSession.AVPlaybackState){
     if(this.session){
+      Logger.info(TAG, `playbackState ${JSON.stringify(playbackState)}`)
       this.session.setAVPlaybackState(playbackState, (err: BusinessError)=>{
         if (err) {
+          Logger.info(TAG, `avPlayer ${JSON.stringify(err)}`);
           Logger.info(TAG, `SetAVPlaybackState BusinessError: code: ${err.code}, message: ${err.message}`);
         } else {
           Logger.info(TAG, 'SetAVPlaybackState successfully');
@@ -328,17 +331,6 @@ export class MediaService{
         this.updateIsPlay(true);
         this.state = AudioPlayerState.PLAY;
       })
-    }
-  }
-
-  // 暂停音乐播放
-  public pause(){
-    Logger.info(TAG, 'AVPlayer pause() isPrepared:' + this.isPrepared + ', state:' + this.state);
-    if (this.isPrepared && this.state === AudioPlayerState.PLAY && this.avPlayer) {
-      this.avPlayer.pause().then(() => {
-        this.state = AudioPlayerState.PAUSE;
-        this.updateIsPlay(false);
-      });
     }
   }
 
@@ -421,14 +413,16 @@ export class MediaService{
       this.isFirst = false;
       this.songItem = await this.songItemBuilder.build(this.songList[this.musicIndex]);
       let url = this.songItemBuilder.getRealUrl();
-
+      console.log(JSON.stringify(url))
       if(url){
+        console.log("url_1")
         let avFileDescriptor: media.AVFileDescriptor = { fd: url.fd, offset: url.offset, length: url.length };
         this.avPlayer.fdSrc = avFileDescriptor;
         Logger.info(TAG, 'loadAsset avPlayer.url:' + this.avPlayer.fdSrc);
       }
     }
     else{
+      console.log("url_2")
       await this.stop();
       Logger.info(`loadAssent reset ${this.songItem} src ${this.songList[this.musicIndex].src}`)
       if (this.songItem === null || this.songItem.src !== this.songList[this.musicIndex].src) {
@@ -465,13 +459,25 @@ export class MediaService{
     }
   }
 
+  // 暂停音乐播放
+  public pause(){
+    Logger.info(TAG, 'AVPlayer pause() isPrepared:' + this.isPrepared + ', state:' + this.state);
+    if (this.isPrepared && this.state === AudioPlayerState.PLAY && this.avPlayer) {
+      this.avPlayer.pause().then(() => {
+        this.state = AudioPlayerState.PAUSE;
+        this.updateIsPlay(false);
+      });
+    }
+  }
+
   // 停止
-  public async stop() {
+  public stop() {
     Logger.info(TAG, 'stop()');
-    if (this.isPrepared && this.avPlayer) {
-      await this.avPlayer.stop();
-      this.updateIsPlay(false);
-      this.state = AudioPlayerState.PAUSE;
+    if (this.isPrepared && this.state === AudioPlayerState.PLAY && this.avPlayer) {
+      this.avPlayer.stop().then(()=>{
+        this.state = AudioPlayerState.STOP;
+        this.updateIsPlay(false);
+      });
     }
   }
 

@@ -1,5 +1,10 @@
 import { router } from '@kit.ArkUI';
 import { RouterUrlConstant } from '@ohos/constantCommon';
+import { SongItem } from '@ohos/mediaCommon';
+
+export const songList: SongItem[] = [
+  {id: 1, title: 'Dream Ite Possible', singer: 'Hzlzh', mark: $r('app.media.ic_vip'), label: $r('app.media.ic_dream'), src: 'Dream It Possible.flac', index: 0, lyric: 'lrcfiles/DreamItPossible.lrc'},
+];
 
 export class OptionItem{
   image: Resource = $r('app.media.ic_collect');

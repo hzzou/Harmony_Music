@@ -28,7 +28,7 @@ export struct Content{
       }
       .borderRadius($r('app.float.playlist_border_radius'))
     }
-    .height(StyleConstant.FULL_HEIGHT)
+    .height('calc(100% - 100vp)')
     .width(StyleConstant.FULL_WIDTH)
     .onBreakpointChange((breakpoints: string)=>{
       this.currentBreakpoint = breakpoints;

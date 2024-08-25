@@ -1,8 +1,9 @@
-import { BreakpointConstant, StyleConstant } from '@ohos/constantCommon/';
+import { BreakpointConstant, SongConstant, StyleConstant } from '@ohos/constantCommon/';
 import { BreakpointSystem } from '@ohos/mediaCommon/';
 import { Content } from '../components/Content';
 import { Header } from '../components/Header';
 import { Player } from '../components/Player';
+import { songList } from '../viewmodel/SongData';
 
 @Entry
 @Component
@@ -16,6 +17,7 @@ struct Index {
   @State message: string = 'Music List';
   // @Component组件创建时执行一次
   aboutToAppear(): void {
+    AppStorage.setOrCreate('songList', songList); //存音乐列表
     this.breakpointSystem.register();
   }
 
@@ -25,13 +27,15 @@ struct Index {
 
   // 页面之间转场
   pageTransition() {
+    //PageTransitionEnter({duration: SongConstant.TRANSITION_DURATION, curve: Curve.Smooth, type: RouteType.Pop})
+    //PageTransitionExit({duration: SongConstant.TRANSITION_DURATION, curve: Curve.Smooth, type: RouteType.Push})
   }
 
   build() {
-    Stack({alignContent: Alignment.Top}){
+    Column(){
       Header({currentBreakpoint: this.currentBreakpoint})
       Content({currentBreakpoint: this.currentBreakpoint})
-      Player()
+      Player({currentBreakpoint: this.currentBreakpoint})
     }
     .width(StyleConstant.FULL_WIDTH)
     .backgroundColor(this.currentBreakpoint === BreakpointConstant.BREAKPOINT_SM ?

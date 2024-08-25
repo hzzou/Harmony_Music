@@ -136,7 +136,7 @@ export struct AlbumComponent{
       }
       .width(StyleConstant.FULL_WIDTH)
       .padding({
-        top: this.currentBreakpoint === BreakpointConstant.BREAKPOINT_SM ? $r('app.float.cover_padding_top_sm') : $r('app.float.cover_padding_top_other'),
+        top: $r('app.float.list_item_padding'),
         left: new BreakpointType({
           sm: $r('app.float.album_padding_sm'),
           md: $r('app.float.album_padding_md'),

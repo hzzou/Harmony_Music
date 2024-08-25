@@ -1,17 +1,20 @@
 import { BreakpointConstant, StyleConstant } from '@ohos/constantCommon';
 import { BreakpointType, MediaService, SongItem } from '@ohos/mediaCommon';
 import { ContentConstant } from '../constants/ContentConstant';
+import { SongSource } from '../viewmodel/SongSource';
 
 @Component
 export struct PlayList{
   @Link currentBreakpoint: string;
   @StorageLink('songList') songList: SongItem[] = []; // 把变量双向绑定到全局AppStorage
-  @StorageLink('isShowPlay') isShowPlay: boolean = false
+  @StorageLink('isShowPlay') isShowPlay: boolean = false;
+
+  @State mediaService: MediaService = MediaService.getInstance();
 
   @Builder
   PlayAll(){
     Row(){
-      Image($r('app.media.ic_play_all'))
+      Image(!this.isShowPlay ? $r('app.media.ic_play_all') : $r('app.media.ic_play'))
         .height($r('app.float.play_all_icon_size'))
         .width($r('app.float.play_all_icon_size'))
       // 传参给value的变量
@@ -48,6 +51,19 @@ export struct PlayList{
       topLeft: $r('app.float.play_all_border_radius'),
     })
     .position({x: 0, y: 0})
+    .onClick(()=>{
+      this.isShowPlay = !this.isShowPlay;
+      if(this.isShowPlay && this.songList.length){
+        console.log("1323")
+        this.mediaService?.loadAssent(0);
+      }
+
+      if(!this.isShowPlay){
+        console.log("7667")
+        this.mediaService?.stop();
+      }
+
+    })
   }
 
   @Builder
@@ -90,18 +106,43 @@ export struct PlayList{
     .width(StyleConstant.FULL_WIDTH)
     .onClick(()=>{
       this.isShowPlay = true;
-      MediaService.getInstance().loadAssent(index)
+      this.mediaService?.loadAssent(index);
     })
   }
 
   build() {
     Column(){
       this.PlayAll()
+
+      List(){
+        LazyForEach(new SongSource(this.songList), (item: SongItem, index: number)=>{
+          ListItem(){
+            Column(){
+              this.SongItem(item, index)
+            }
+            .padding({
+              left: $r('app.float.list_item_padding'),
+              right: $r('app.float.list_item_padding'),
+            })
+          }
+        }, (item: SongItem)=>JSON.stringify(item))
+      }
+      .width(StyleConstant.FULL_WIDTH)
+      .backgroundColor(Color.White)
+      .margin({top: $r('app.float.list_area_margin_top')})
+      .lanes(this.currentBreakpoint === BreakpointConstant.BREAKPOINT_LG ?
+      ContentConstant.COL_TWO : ContentConstant.COL_ONE) // 设置list布局的列数
+      .layoutWeight(1)
+      .divider({
+        color: $r('app.color.list_divider'),
+        strokeWidth: $r('app.float.stroke_width'),
+        startMargin: $r('app.float.list_item_padding'),
+        endMargin: $r('app.float.list_item_padding')
+      })
     }
     .width(StyleConstant.FULL_WIDTH)
     .padding({
-      top: this.currentBreakpoint === BreakpointConstant.BREAKPOINT_SM ? 0 : $r('app.float.list_area_padding_top'),
-      bottom: $r('app.float.list_area_padding_bottom')
+      top: this.currentBreakpoint === BreakpointConstant.BREAKPOINT_SM ? 0 : $r('app.float.list_area_padding_top')
     })
   }
 }

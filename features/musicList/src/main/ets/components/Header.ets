@@ -58,6 +58,7 @@ export struct Header{
         .margin({right: $r('app.float.icon_margin')})
         .bindMenu(this.getMenu())
     }
+    .backgroundColor(Color.White)
     .width(StyleConstant.FULL_WIDTH)
     .height($r('app.float.title_bar_height'))
     .zIndex(HeaderConstant.Z_INDEX)

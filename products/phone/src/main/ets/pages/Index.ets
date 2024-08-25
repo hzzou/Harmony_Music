@@ -37,7 +37,7 @@ struct Index {
         }
       }){
         Column({space: 12}){
-          ForEach(this.viewList, (item: ViewItem)=>{
+          ForEach(this.viewList, (item: ViewItem, index: number)=>{
             Column(){
               Text(item.title)
                 .fontSize('28fp')
@@ -64,8 +64,7 @@ struct Index {
                 .onClick(()=>{
                   // 路由模式为单实例模式
                   // 如果目标页面的url已经存在于页面栈中，则该url页面移动到栈顶
-                  console.log('123')
-                  router.pushUrl({ url: item.url}, router.RouterMode.Single)
+                  router.pushUrl({ url: item.url}, router.RouterMode.Single);
                 })
               }
               .alignItems(HorizontalAlign.End)
