@@ -471,13 +471,13 @@ export class MediaService{
   }
 
   // 停止
-  public stop() {
+  public async stop() {
     Logger.info(TAG, 'stop()');
-    if (this.isPrepared && this.state === AudioPlayerState.PLAY && this.avPlayer) {
-      this.avPlayer.stop().then(()=>{
-        this.state = AudioPlayerState.STOP;
-        this.updateIsPlay(false);
-      });
+    if (this.isPrepared && this.avPlayer) {
+      await this.avPlayer.pause(); // 此处调用stop不生效
+      this.state = AudioPlayerState.STOP;
+      AppStorage.setOrCreate<boolean>('isPlay', false);
+      this.setPlayState({state: avSession.PlaybackState.PLAYBACK_STATE_STOP})
     }
   }
 
