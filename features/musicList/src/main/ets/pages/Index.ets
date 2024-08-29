@@ -1,4 +1,4 @@
-import { BreakpointConstant, SongConstant, StyleConstant } from '@ohos/constantCommon/';
+import { BreakpointConstant, StyleConstant } from '@ohos/constantCommon/';
 import { BreakpointSystem } from '@ohos/mediaCommon/';
 import { Content } from '../components/Content';
 import { Header } from '../components/Header';

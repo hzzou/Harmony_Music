@@ -409,8 +409,10 @@ export class MediaService{
     BackgroundUtil.startContinuousTask(this.context);
     this.updateMusicIndex(musicIndex);
 
-    if(this.isFirst && this.avPlayer){
+    if(this.isFirst){
       this.isFirst = false;
+    }
+    if(this.avPlayer){
       this.songItem = await this.songItemBuilder.build(this.songList[this.musicIndex]);
       let url = this.songItemBuilder.getRealUrl();
       console.log(JSON.stringify(url))

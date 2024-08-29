@@ -3,7 +3,9 @@ import { RouterUrlConstant } from '@ohos/constantCommon';
 import { SongItem } from '@ohos/mediaCommon';
 
 export const songList: SongItem[] = [
-  {id: 1, title: 'Dream Ite Possible', singer: 'Hzlzh', mark: $r('app.media.ic_vip'), label: $r('app.media.ic_dream'), src: 'Dream It Possible.flac', index: 0, lyric: 'lrcfiles/DreamItPossible.lrc'},
+  {id: 1, title: '大海', singer: '张雨生', mark: $r('app.media.ic_sq'), label: $r('app.media.ic_avatar1'), src: 'song/大海.mp3', index: 0, lyric: ''},
+  {id: 2, title: '等一分钟', singer: '徐誉滕', mark: $r('app.media.ic_sq'), label: $r('app.media.ic_avatar2'), src: 'song/等一分钟.mp3', index: 1, lyric: ''},
+  {id: 3, title: 'Dream Ite Possible', singer: 'Hzlzh', mark: $r('app.media.ic_vip'), label: $r('app.media.ic_dream'), src: 'song/Dream It Possible.flac', index: 2, lyric: 'lrcfiles/DreamItPossible.lrc'}
 ];
 
 export class OptionItem{

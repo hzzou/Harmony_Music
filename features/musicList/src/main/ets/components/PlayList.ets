@@ -14,7 +14,7 @@ export struct PlayList{
   @Builder
   PlayAll(){
     Row(){
-      Image(!this.isShowPlay ? $r('app.media.ic_play_all') : $r('app.media.ic_play'))
+      Image($r('app.media.ic_play_all'))
         .height($r('app.float.play_all_icon_size'))
         .width($r('app.float.play_all_icon_size'))
       // 传参给value的变量
@@ -51,19 +51,6 @@ export struct PlayList{
       topLeft: $r('app.float.play_all_border_radius'),
     })
     .position({x: 0, y: 0})
-    .onClick(()=>{
-      this.isShowPlay = !this.isShowPlay;
-      if(this.isShowPlay && this.songList.length){
-        console.log("1323")
-        this.mediaService?.loadAssent(0);
-      }
-
-      if(!this.isShowPlay){
-        console.log("7667")
-        this.mediaService?.stop();
-      }
-
-    })
   }
 
   @Builder
@@ -131,7 +118,7 @@ export struct PlayList{
       .backgroundColor(Color.White)
       .margin({top: $r('app.float.list_area_margin_top')})
       .lanes(this.currentBreakpoint === BreakpointConstant.BREAKPOINT_LG ?
-      ContentConstant.COL_TWO : ContentConstant.COL_ONE) // 设置list布局的列数
+      ContentConstant.COL_TWO : ContentConstant.COL_ONE) // 不同媒体上设置list布局的列数
       .layoutWeight(1)
       .divider({
         color: $r('app.color.list_divider'),
