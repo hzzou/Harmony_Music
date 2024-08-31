@@ -92,7 +92,7 @@ export struct PlayList{
     .height($r('app.float.list_item_height'))
     .width(StyleConstant.FULL_WIDTH)
     .onClick(()=>{
-      this.isShowPlay = true;
+      this.isShowPlay = true; // 这个设置为true触发bindContentCover
       this.mediaService?.loadAssent(index);
     })
   }

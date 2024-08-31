@@ -4,6 +4,7 @@ import { displaySync } from '@kit.ArkGraphics2D';
 import { PlayerConstant } from '../constants/PlayerConstant';
 import { curves, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { MusicControl } from './MusicControl';
 
 
 @Component
@@ -69,14 +70,14 @@ export struct Player{
   @Builder
   musicPlayerBuilder(){
     Column(){
-
+      MusicControl({isShowPlay: this.isShowPlay})
     }
     .height(StyleConstant.FULL_HEIGHT)
     .width(StyleConstant.FULL_WIDTH)
     .justifyContent(FlexAlign.End)
     .transition(TransitionEffect.translate({y: 1000}).animation({curve: curves.springMotion(0.6, 0.8)}))
     .onAppear(()=>{
-      window.getLastWindow(getContext(this)).then((win: window.Window)=>{
+      /*window.getLastWindow(getContext(this)).then((win: window.Window)=>{
         let area = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
         this.topArea = px2vp(area.topRect.height);
         let bottomArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
@@ -93,7 +94,7 @@ export struct Player{
         win.setWindowSystemBarProperties(sysBarProps);
       }).catch((err: BusinessError)=>{
         Logger.error(`${err.code} + ${err.message}`)
-      });
+      });*/
     })
   }
 
@@ -195,7 +196,7 @@ export struct Player{
     .width(StyleConstant.FULL_WIDTH)
     .height($r('app.float.player_area_height'))
     .backgroundColor($r('app.color.player_background'))
-    //.bindContentCover($$this.isShowPlay, this.musicPlayerBuilder(), ModalTransition.DEFAULT)
+    .bindContentCover($$this.isShowPlay, this.musicPlayerBuilder(), ModalTransition.DEFAULT) // 显示弹窗
     .padding({left: $r('app.float.player_padding'), right: $r('app.float.player_padding')})
     .gesture(
       PanGesture(this.panOption)
