@@ -7,8 +7,11 @@ import { image } from '@kit.ImageKit';
 import { effectKit } from '@kit.ArkGraphics2D';
 import { PlayerConstant } from '../constants/PlayerConstant';
 import { TopArea } from './TopArea';
+import { MusicInfo } from './MusicInfo';
+import { ControlArea } from './ControlArea';
 
 
+// Player组件的Row上的bindContentCover触发弹出全屏模态页面
 @Component
 export struct MusicControl{
   @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointConstant.BREAKPOINT_SM;
@@ -85,6 +88,7 @@ export struct MusicControl{
     } catch (exception) {
       Logger.error("Failed to register callback. Code: "+ JSON.stringify(exception));
     }
+    console.log(this.isFoldFull+'');
   }
 
   aboutToDisappear(): void {
@@ -112,6 +116,31 @@ export struct MusicControl{
                 bottom: $r('app.float.music_info_margin_top'),
                 left: $r('app.float.top_margin_left')
               })
+
+            GridRow({
+              columns: {md: BreakpointConstant.COLUMN_MD},
+              gutter: BreakpointConstant.GUTTER_MUSIC_X
+            }){
+              GridCol({
+                span: {md: BreakpointConstant.SPAN_SM}
+              }){
+                // 音乐时间组件
+                MusicInfo()
+              }
+              .margin({
+                left: $r('app.float.margin_small'),
+                right: $r('app.float.margin_small')
+              })
+
+              GridCol({
+                span: {md: BreakpointConstant.SPAN_SM}
+              }){
+                // 歌词组件
+              }
+              .padding({left: $r('app.float.twenty_four')})
+            }
+            .layoutWeight(1)
+            .margin({bottom: $r('app.float.fold_margin_bottom')})
           }
           .layoutWeight(1)
           .padding({
@@ -121,14 +150,62 @@ export struct MusicControl{
         }
         else if(this.currentBreakpoint === BreakpointConstant.BREAKPOINT_LG){
           Column(){
+            TopArea({isShowPlay: this.isShowPlay})
+              .padding({
+                left: $r('app.float.common_padding'),
+                right: $r('app.float.common_padding')
+              })
 
+            GridRow({
+              columns: {md: BreakpointConstant.COLUMN_MD, lg: BreakpointConstant.COLUMN_LG},
+              gutter: BreakpointConstant.GUTTER_MUSIC_X
+            }){
+              GridCol({
+                span: {md: BreakpointConstant.SPAN_SM, lg: BreakpointConstant.SPAN_SM},
+                offset: {lg: BreakpointConstant.OFFSET_MD}
+              }){
+                Column(){
+                  Image(this.songList[this.selectIndex].label)
+                    .width(StyleConstant.FULL_WIDTH)
+                    .aspectRatio(1)
+                    .borderRadius($r('app.float.cover_radius'))
+
+                  ControlArea()
+                }
+                .height(StyleConstant.FULL_HEIGHT)
+                .justifyContent(FlexAlign.SpaceBetween)
+                .margin({bottom: $r('app.float.common_margin')})
+              }
+
+              GridCol({
+                span: {md: BreakpointConstant.SPAN_SM, lg: BreakpointConstant.SPAN_MD}
+              }){
+                // 歌词
+              }
+            }
+            .layoutWeight(1)
+            .padding({
+              left: $r('app.float.common_padding'),
+              right: $r('app.float.common_padding'),
+              top: $r('app.float.lg_music_top'),
+              bottom: $r('app.float.lg_music_margin_bottom')
+            })
           }
         }
         else{
           // 对齐方式：顶部起始端
           Stack({alignContent: Alignment.TopStart}){
             Swiper(){
-
+              MusicInfo()
+                .margin({
+                  top: $r('app.float.music_component_top'),
+                  bottom: $r('app.float.music_component_bottom')
+                })
+                .padding({
+                  left: $r('app.float.common_padding'),
+                  right: $r('app.float.common_padding')
+                })
+              // 歌词组件
             }
             .height(StyleConstant.FULL_HEIGHT)
             .indicator( // 导航指示器样式

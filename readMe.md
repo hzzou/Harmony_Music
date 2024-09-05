@@ -9,3 +9,4 @@
 * 配置申请签名文件在File > Project Structure > Project > Signing Configs窗口中
 * 本地安装到模拟器只能使用hdc install 分别安装.hap和.hsp
 * 打包的时候，选择H图形符号右侧那个类似摄像头的build Mode切换打包模式，
+* control+option+o去除无效引用，或者Code -> Optimize Imports

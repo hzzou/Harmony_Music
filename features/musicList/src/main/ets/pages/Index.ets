@@ -18,6 +18,7 @@ struct Index {
   // @Component组件创建时执行一次
   aboutToAppear(): void {
     AppStorage.setOrCreate('songList', songList); //存音乐列表
+    // 此处注册后会激发BreakpointSystem里面的AppStorage.setOrCreate存currentBreakpoint变量到AppStorage
     this.breakpointSystem.register();
   }
 

@@ -1,9 +1,8 @@
-import { StyleConstant } from '@ohos/constantCommon'
-import { BreakpointType, Logger, MediaService, SongItem } from '@ohos/mediaCommon';
+import { StyleConstant } from '@ohos/constantCommon';
+import { BreakpointType, MediaService, SongItem } from '@ohos/mediaCommon';
 import { displaySync } from '@kit.ArkGraphics2D';
 import { PlayerConstant } from '../constants/PlayerConstant';
-import { curves, window } from '@kit.ArkUI';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { curves } from '@kit.ArkUI';
 import { MusicControl } from './MusicControl';
 
 
@@ -67,6 +66,7 @@ export struct Player{
     this.backDisplaySyncSlow?.off('frame', this.drawFrame);
   }
 
+  // 点击底部播放区域的时候弹出播放页
   @Builder
   musicPlayerBuilder(){
     Column(){
