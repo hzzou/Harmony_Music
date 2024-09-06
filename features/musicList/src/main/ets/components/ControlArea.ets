@@ -1,5 +1,5 @@
 import { BreakpointConstant, StyleConstant } from '@ohos/constantCommon';
-import { BreakpointType, MediaService } from '@ohos/mediaCommon';
+import { BreakpointType, MediaService, MusicPlayMode } from '@ohos/mediaCommon';
 import { PlayerConstant } from '../constants/PlayerConstant';
 
 @Component
@@ -21,6 +21,8 @@ export struct ControlArea{
   @StorageLink('pageShowTime') pageShowTime: number = 0; // 页面显示次数
 
   @State mediaService: MediaService = MediaService.getInstance();
+  @State playMode: MusicPlayMode  = this.mediaService.getPlayMode();
+
 
   aboutToAppear(): void {
     console.log('isPlay: '+this.isPlay)
@@ -30,8 +32,19 @@ export struct ControlArea{
   build() {
     Column(){
       Row(){
-        Image($r('app.media.ic_public_list_cycled'))
+        // 目前只设置不是循环就是随机
+        Image(this.playMode === MusicPlayMode.ORDER ? $r('app.media.ic_public_list_cycled') : $r('app.media.ic_public_list_random'))
           .controlImage(this.currentBreakpoint)
+          .onClick(()=>{
+            if(this.playMode === MusicPlayMode.ORDER){
+              this.mediaService.setPlayModel(MusicPlayMode.RANDOM);
+            }
+            else{
+              this.mediaService.setPlayModel(MusicPlayMode.ORDER);
+            }
+            // 更新当前播放模式
+            this.playMode = this.mediaService.getPlayMode();
+          })
 
         Image($r('app.media.ic_sequence'))
           .controlImage(this.currentBreakpoint)
@@ -66,6 +79,9 @@ export struct ControlArea{
             }).getValue(this.currentBreakpoint)
           })
           .hitTestBehavior(HitTestMode.Block) // 触摸测试类型。自身响应触摸测试，阻塞子节点和兄弟节点的触摸测试
+          .onChange((value: number)=>{
+            this.mediaService.seek(value);
+          })
 
         Row(){
           Text(this.currentTime)

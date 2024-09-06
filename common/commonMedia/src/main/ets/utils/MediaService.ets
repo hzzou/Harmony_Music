@@ -526,6 +526,7 @@ export class MediaService{
     Logger.info(TAG, 'setPlayModel mode: ' + this.playMode);
   }
 
+  // 获取当前播放模式
   public getPlayMode() {
     return this.playMode;
   }

@@ -9,6 +9,7 @@ import { PlayerConstant } from '../constants/PlayerConstant';
 import { TopArea } from './TopArea';
 import { MusicInfo } from './MusicInfo';
 import { ControlArea } from './ControlArea';
+import { LyricsComponent } from './LyricsComponent';
 
 
 // Player组件的Row上的bindContentCover触发弹出全屏模态页面
@@ -137,6 +138,7 @@ export struct MusicControl{
                 span: {md: BreakpointConstant.SPAN_SM}
               }){
                 // 歌词组件
+                LyricsComponent()
               }
               .padding({left: $r('app.float.twenty_four')})
             }
@@ -181,7 +183,8 @@ export struct MusicControl{
               GridCol({
                 span: {md: BreakpointConstant.SPAN_SM, lg: BreakpointConstant.SPAN_MD}
               }){
-                // 歌词
+                // 歌词组件
+                LyricsComponent()
               }
             }
             .layoutWeight(1)
@@ -207,6 +210,7 @@ export struct MusicControl{
                   right: $r('app.float.common_padding')
                 })
               // 歌词组件
+              LyricsComponent()
             }
             .height(StyleConstant.FULL_HEIGHT)
             .indicator( // 导航指示器样式
