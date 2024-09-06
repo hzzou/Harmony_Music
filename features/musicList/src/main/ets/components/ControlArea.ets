@@ -9,14 +9,23 @@ export struct ControlArea{
 
   // 和AppStorage中的更改双向影响
   @StorageLink('isPlay') isPlay: boolean = false;
+  // 获取媒体服务存的当前播放时间，根据相应事件不停刷新的，转为了时分秒格式
   @StorageLink('currentTime') currentTime: string = '00:00';
+  // 来自媒体服务设置的总时长，转为了时分秒格式
   @StorageLink('totalTime') totalTime: string = '00:00';
+  // Slider进度条用, 是毫秒
   @StorageLink('progress') value: number = 0;
+  // 来自媒体服务设置的总时长，Slider进度条用,毫秒
   @StorageLink('progressMax') max: number = 0;
   @StorageLink('imageColor') imageColor: string = '';
-  @StorageLink('pageShowTime') pageShowTime: number = 0;
+  @StorageLink('pageShowTime') pageShowTime: number = 0; // 页面显示次数
 
   @State mediaService: MediaService = MediaService.getInstance();
+
+  aboutToAppear(): void {
+    console.log('isPlay: '+this.isPlay)
+  }
+
 
   build() {
     Column(){
@@ -88,6 +97,36 @@ export struct ControlArea{
             this.pageShowTime = 0;
           })
 
+        Image(this.isPlay ? $r('app.media.ic_public_play') : $r('app.media.ic_public_pause'))
+          .imgSet()
+          .width(new BreakpointType({
+            sm: $r('app.float.image_play_width'),
+            md: $r('app.float.image_play_width'),
+            lg: $r('app.float.image_play_width_lg')
+          }).getValue(this.currentBreakpoint))
+          .onClick(()=>{
+            if(this.isPlay){
+              this.mediaService.pause();
+            }
+            else{
+              if(this.mediaService.getFirst()){
+                this.mediaService.loadAssent(0)
+              }
+              else{
+                this.mediaService.play();
+              }
+            }
+            this.pageShowTime = 0;
+          })
+
+        Image($r('app.media.ic_public_next'))
+          .imgSet()
+          .width(this.currentBreakpoint === BreakpointConstant.BREAKPOINT_LG ?
+          $r('app.float.control_width_lg') : $r('app.float.control_width'))
+          .onClick(()=>{
+            this.mediaService.playNextAuto(true);
+            this.pageShowTime = 0;
+          })
       }
       .width(StyleConstant.FULL_WIDTH)
       .justifyContent(FlexAlign.SpaceBetween)

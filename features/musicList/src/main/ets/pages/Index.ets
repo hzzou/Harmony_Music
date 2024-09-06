@@ -1,5 +1,5 @@
 import { BreakpointConstant, StyleConstant } from '@ohos/constantCommon/';
-import { BreakpointSystem } from '@ohos/mediaCommon/';
+import { BreakpointSystem, MediaService } from '@ohos/mediaCommon/';
 import { Content } from '../components/Content';
 import { Header } from '../components/Header';
 import { Player } from '../components/Player';
@@ -20,6 +20,7 @@ struct Index {
     AppStorage.setOrCreate('songList', songList); //存音乐列表
     // 此处注册后会激发BreakpointSystem里面的AppStorage.setOrCreate存currentBreakpoint变量到AppStorage
     this.breakpointSystem.register();
+    MediaService.getInstance();  // 初始化单例模式，让它存在AppStorage中
   }
 
   aboutToDisappear(): void {

@@ -1,9 +1,10 @@
 import { StyleConstant } from '@ohos/constantCommon';
-import { BreakpointType, MediaService, SongItem } from '@ohos/mediaCommon';
+import { BreakpointType, Logger, MediaService, SongItem } from '@ohos/mediaCommon';
 import { displaySync } from '@kit.ArkGraphics2D';
 import { PlayerConstant } from '../constants/PlayerConstant';
-import { curves } from '@kit.ArkUI';
+import { curves, window } from '@kit.ArkUI';
 import { MusicControl } from './MusicControl';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 
 @Component
@@ -14,7 +15,7 @@ export struct Player{
   @StorageLink("songList") songList: SongItem[] = [];
   @StorageLink("topArea") topArea: number = 0;
   @StorageLink("bottomArea") bottomArea: number = 0;
-  @StorageLink("isShowPlay") @Watch('watchPlay') isShowPlay: boolean = false;
+  @StorageLink("isShowPlay") isShowPlay: boolean = false;
   @StorageLink("deviceHeight") deviceHeight: number = 0;
 
   @Link currentBreakpoint: string; // 从父组件初始化
@@ -30,14 +31,6 @@ export struct Player{
       this.imageRotate = 0;
     }
     this.imageRotate += 1;
-  }
-
-  // 从list点击播放传导过来
-  watchPlay(){
-    if(this.isShowPlay){
-      this.isPlay = true;
-      this.animationFun();
-    }
   }
 
   // label图片开始动画
@@ -68,33 +61,88 @@ export struct Player{
 
   // 点击底部播放区域的时候弹出播放页
   @Builder
-  musicPlayerBuilder(){
+  MusicPlayerBuilder(){
     Column(){
-      MusicControl({isShowPlay: this.isShowPlay})
+      Column(){
+        MusicControl({isShowPlay: this.isShowPlay})
+      }
+      .height((100 - this.componentHeight)+'%') //此处控制弹窗高度
     }
     .height(StyleConstant.FULL_HEIGHT)
     .width(StyleConstant.FULL_WIDTH)
     .justifyContent(FlexAlign.End)
     .transition(TransitionEffect.translate({y: 1000}).animation({curve: curves.springMotion(0.6, 0.8)}))
+    .gesture(
+      PanGesture(this.panOption)
+        .onActionUpdate((event: GestureEvent)=>{
+          // 手势移动
+          if(event){
+            let height = (event.offsetY / this.deviceHeight) * 100;
+            this.componentHeight = height;
+
+            if(this.componentHeight < 0){
+              this.componentHeight = 0;
+            }
+          }
+        })
+        .onActionEnd(()=>{
+          // 手势抬起，即手势结束后
+          if(this.componentHeight > 40){
+            this.isShowPlay = false;
+          }
+          else{
+            this.componentHeight = 0;
+          }
+        })) // PanGesture 拖动手势
     .onAppear(()=>{
-      /*window.getLastWindow(getContext(this)).then((win: window.Window)=>{
-        let area = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
-        this.topArea = px2vp(area.topRect.height);
+      // 获取当前应用内最上层的子窗口, getContext(this)获取当前应用context
+      window.getLastWindow(getContext(this)).then(async (win: window.Window)=>{
+        // 返回当前应用内最后显示的窗口对象win
+        // 获取当前窗口内容规避的区域, 如系统栏、刘海屏、手势区、软键盘区等需要避让的区域
+        // 此处获取的避让类型是系统默认区域
+        let topArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM); // 得到的都是以px为单位
+        this.topArea = px2vp(topArea.topRect.height);
+        console.log('topArea: '+this.topArea);
+        // 此处获取的避让类型是底部导航条区域
         let bottomArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
         this.bottomArea = px2vp(bottomArea.bottomRect.height);
-        Logger.info("bottomArea "+this.bottomArea);
+        console.log('bottomArea: '+this.bottomArea);
 
+        // 设置沉浸式布局
         if(this.topArea > 0){
-          win.setWindowLayoutFullScreen(true);
+          await win.setWindowLayoutFullScreen(true);
         }
 
+        // 设置状态栏文字颜色
         let sysBarProps: window.SystemBarProperties = {
           statusBarColor: '#fff'
         };
-        win.setWindowSystemBarProperties(sysBarProps);
+
+        await win.setWindowSystemBarProperties(sysBarProps);
       }).catch((err: BusinessError)=>{
         Logger.error(`${err.code} + ${err.message}`)
-      });*/
+      });
+    })
+    .onDisAppear(()=>{
+      this.componentHeight = 0;
+      this.isShowPlay = false;
+      window.getLastWindow(getContext(this)).then(async (win: window.Window)=>{
+        let area = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+        let topHeight = px2vp(area.topRect.height);
+
+        if(topHeight > 0){
+          await win.setWindowLayoutFullScreen(false);
+        }
+
+        // 设置状态栏文字颜色
+        let sysBarProps: window.SystemBarProperties = {
+          statusBarColor: '#000'
+        };
+
+        await win.setWindowSystemBarProperties(sysBarProps);
+      }).catch((error: BusinessError)=>{
+        Logger.error(`${error.code} + ${error.message}`)
+      })
     })
   }
 
@@ -196,7 +244,7 @@ export struct Player{
     .width(StyleConstant.FULL_WIDTH)
     .height($r('app.float.player_area_height'))
     .backgroundColor($r('app.color.player_background'))
-    .bindContentCover($$this.isShowPlay, this.musicPlayerBuilder(), ModalTransition.DEFAULT) // 显示弹窗
+    .bindContentCover($$this.isShowPlay, this.MusicPlayerBuilder(), ModalTransition.DEFAULT) // 显示弹窗
     .padding({left: $r('app.float.player_padding'), right: $r('app.float.player_padding')})
     .gesture(
       PanGesture(this.panOption)

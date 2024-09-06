@@ -23,7 +23,7 @@ export struct MusicControl{
     this.context.createModuleContext('musicList')
       .resourceManager
       .getMediaContent(this.songList[this.selectIndex].label)
-      .then((value)=>{
+      .then((value: Uint8Array)=>{
         let buffer = value.buffer as ArrayBuffer;
         image.createImageSource(buffer)
           .createPixelMap()
@@ -35,7 +35,7 @@ export struct MusicControl{
               else{
                 let color = colorPicker.getLargestProportionColor();
                 let colorArr = ColorConversion.dealColor(color.red, color.green, color.blue);
-                this.imageColor = `rgba(${colorArr[0]}, ${colorArr[1]}, ${colorArr[1]})`;
+                this.imageColor = `rgba(${colorArr[0]}, ${colorArr[1]}, ${colorArr[2]}, 1)`;
               }
             })
           })
@@ -47,8 +47,8 @@ export struct MusicControl{
 
   @StorageLink('songList') songList: SongItem[] = [];
   @StorageLink('imageColor') imageColor: string = 'rgba(0, 0, 0, 1)';
-  @StorageLink('topArea') topArea: number = 0;
-  @StorageLink('bottomArea') bottomArea: number = 0;
+  @StorageLink('topArea') topArea: number = 0; //来自player，决定弹窗的padding
+  @StorageLink('bottomArea') bottomArea: number = 0; //来自player
   @StorageLink('pageShowTime') pageShowTime: number = 0;
   @StorageLink('isFoldFull') isFoldFull: boolean = false;
 
@@ -88,7 +88,8 @@ export struct MusicControl{
     } catch (exception) {
       Logger.error("Failed to register callback. Code: "+ JSON.stringify(exception));
     }
-    console.log(this.isFoldFull+'');
+    console.log(this.isFoldFull+' :isFold');
+    console.log(this.isShowPlay+' :isShowPlay');
   }
 
   aboutToDisappear(): void {
@@ -124,7 +125,7 @@ export struct MusicControl{
               GridCol({
                 span: {md: BreakpointConstant.SPAN_SM}
               }){
-                // 音乐时间组件
+                // 音乐时间信息组件
                 MusicInfo()
               }
               .margin({
@@ -233,7 +234,14 @@ export struct MusicControl{
                 clearInterval(this.intervalID)
               }
             })
+
+            TopArea({isShowPlay: this.isShowPlay})
+              .padding({
+                left: $r('app.float.common_padding'),
+                right: $r('app.float.common_padding'),
+              })
           }
+          .height(StyleConstant.FULL_HEIGHT)
         }
       }
       .padding({

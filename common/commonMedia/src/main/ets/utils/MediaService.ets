@@ -270,6 +270,8 @@ export class MediaService{
         this.state = AudioPlayerState.UNKNOWN;
         break;
     }
+    this.updateCardData();
+    this.updateIsPlay(this.state === AudioPlayerState.PLAY); // 如果是播放状态，则更新
   }
 
   // 进度条刷新时间
@@ -478,7 +480,7 @@ export class MediaService{
     if (this.isPrepared && this.avPlayer) {
       await this.avPlayer.pause(); // 此处调用stop不生效
       this.state = AudioPlayerState.STOP;
-      AppStorage.setOrCreate<boolean>('isPlay', false);
+      AppStorage.setOrCreate<boolean>('isPlay', false); // isPlay很多地方会用到判断是否是播放态展示相关组件
       this.setPlayState({state: avSession.PlaybackState.PLAYBACK_STATE_STOP})
     }
   }
