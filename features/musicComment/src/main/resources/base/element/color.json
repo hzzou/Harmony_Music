@@ -1,0 +1,40 @@
+{
+  "color": [
+    {
+      "name": "header_font_color",
+      "value": "#e6000000"
+    },
+    {
+      "name": "music_info_color",
+      "value": "#E4ECF7"
+    },
+    {
+      "name": "info_title_color",
+      "value": "#e6000000"
+    },
+    {
+      "name": "info_singer_color",
+      "value": "#e6000000"
+    },
+    {
+      "name": "comment_title_color",
+      "value": "#e6000000"
+    },
+    {
+      "name": "list_divider",
+      "value": "#1a182431"
+    },
+    {
+      "name": "nickname_color",
+      "value": "#99182431"
+    },
+    {
+      "name": "time_color",
+      "value": "#66182431"
+    },
+    {
+      "name": "content_color",
+      "value": "#182431"
+    }
+  ]
+}

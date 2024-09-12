@@ -6,15 +6,15 @@
     },
     {
       "name": "comment_title",
-      "value": "comment"
+      "value": "评论"
     },
     {
       "name": "wonderful_comment",
-      "value": "Wonderful review (999+)"
+      "value": "精彩评论（999+）"
     },
     {
       "name": "new_comment",
-      "value": "Last Reviews"
+      "value": "最新评论"
     }
   ]
 }
